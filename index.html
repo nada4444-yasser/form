@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <title>Simple Post App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+    }
+
+    #submitBtn {
+      background-color: #3f51b5;
+    }
+
+    #loadBtn {
+      background-color: #00bcd4;
+      margin-top: 10px;
+    }
+
+    .post {
+      background-color: #e8f5e9;
+      border-left: 5px solid #4caf50;
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 5px;
+    }
+
+    .section-title {
+      font-weight: bold;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Create a Post</h2>
+
+    <input type="text" id="title" placeholder="Enter post title" required>
+    <textarea id="content" placeholder="Enter post content" rows="4" required></textarea>
+    <button id="submitBtn">SUBMIT POST</button>
+
+    <div class="section-title" id="singlePostTitle" style="display:none;">Post Created Successfully!</div>
+    <div id="latestPost"></div>
+
+    <button id="loadBtn">LOAD RECENT POSTS</button>
+    <div id="allPosts"></div>
+  </div>
+
+  <script>
+    const titleInput = document.getElementById("title");
+    const contentInput = document.getElementById("content");
+    const submitBtn = document.getElementById("submitBtn");
+    const loadBtn = document.getElementById("loadBtn");
+    const latestPostDiv = document.getElementById("latestPost");
+    const singlePostTitle = document.getElementById("singlePostTitle");
+    const allPostsDiv = document.getElementById("allPosts");
+
+    let posts = JSON.parse(localStorage.getItem("posts")) || [];
+
+    function createPostHTML(post) {
+      return `
+        <div class="post">
+          <h4>${post.title}</h4>
+          <p>${post.content}</p>
+        </div>
+      `;
+    }
+
+    submitBtn.onclick = () => {
+      const title = titleInput.value.trim();
+      const content = contentInput.value.trim();
+
+      if (!title || !content) {
+        alert("Please fill in both fields.");
+        return;
+      }
+
+      const newPost = { title, content };
+      posts.unshift(newPost);
+      localStorage.setItem("posts", JSON.stringify(posts));
+
+      // عرض المنشور مباشرةً
+      singlePostTitle.style.display = "block";
+      latestPostDiv.innerHTML = createPostHTML(newPost);
+
+      // تفريغ الحقول
+      titleInput.value = "";
+      contentInput.value = "";
+    };
+
+    loadBtn.onclick = () => {
+      allPostsDiv.innerHTML = ""; // تفريغ
+
+      if (posts.length === 0) {
+        allPostsDiv.innerHTML = "<p>No posts available.</p>";
+        return;
+      }
+
+      posts.forEach(post => {
+        allPostsDiv.innerHTML += createPostHTML(post);
+      });
+    };
+  </script>
+
+</body>
+</html>
